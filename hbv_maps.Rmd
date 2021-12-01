@@ -1,0 +1,179 @@
+---
+title: "HBV maps"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Coverage of HBV vaccines by province in the Lao PDR according to LSIS-I and LSIS-II
+
+
+```{r packages}
+
+library(tidyverse)
+library(sf)
+library(tmap)
+
+```
+
+
+
+
+## MICS 2017
+
+
+
+```{r data prov}
+
+adm1 <- read_sf("data/lao_bnd_admin1/lao_bnd_admin1_ngd2018.shp")
+adm1
+
+data <- read.csv("data/cov_bd_penta.csv", header=T, sep=";", dec = ",")
+glimpse(data)
+
+```
+
+
+```{r adm1}
+
+glimpse(adm1)
+
+st_crs(adm1)
+
+```
+
+
+```{r merge}
+
+# Merge the datasets
+
+# birth dose coverage
+data %>% select(prov_new, bd_p, penta1_p, penta2_p, penta3_p) -> cov
+
+cov$ADM1_EN <- cov$prov_new
+
+merge(adm1, cov, by = "ADM1_EN") -> adm1_cov
+
+```
+
+
+
+
+## Map with ggplot
+
+
+```{r bd map}
+
+adm1_cov %>% 
+  ggplot()+
+  geom_sf(aes(fill=bd_p)) # Yeay it worked
+
+```
+
+
+
+
+## Map with tmap
+
+
+```{r tmap}
+
+tm_shape(adm1_cov) + tm_borders()
+
+map_lao = tm_shape(adm1_cov) + tm_polygons()
+
+tm_shape(adm1_cov) + tm_polygons(col="bd_p") + tm_borders()
+
+
+
+```
+
+
+
+
+```{r all maps}
+
+map_lao + 
+  tm_shape(adm1_cov) + 
+  tm_fill(col="bd_p",
+          n=5, 
+          palette = "viridis",
+          title = "HBV birth dose (%)",
+          legend.position = "bottom") + 
+  tm_borders() -> map1
+
+map_lao + 
+  tm_shape(adm1_cov) + 
+  tm_fill(col="penta1_p",
+          n=5, 
+          palette = "viridis",
+          title = "Penta dose 1 (%)",
+          legend.position = "bottom") + 
+  tm_borders() -> map2
+
+map_lao + 
+  tm_shape(adm1_cov) + 
+  tm_fill(col="penta2_p",
+          n=5, 
+          palette = "viridis",
+          title = "Penta dose 2 (%)",
+          legend.position = "bottom") + 
+  tm_borders() -> map3
+
+map_lao + 
+  tm_shape(adm1_cov) + 
+  tm_fill(col="penta3_p",
+          n=5, 
+          palette = "viridis",
+          title = "Penta dose 3 (%)",
+          legend.position = "bottom") + 
+  tm_borders() -> map4
+
+
+tmap_arrange(map1, map2, map3, map4, nrow=1) -> map_all
+
+tmap::tmap_save(map_all,"outputs/map_all.png", width=20,height=10,units ="cm")
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

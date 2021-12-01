@@ -75,6 +75,29 @@ adm1_cov %>%
 ```
 
 
+```{r map}
+
+adm1_cov %>% 
+  ggplot()+
+  geom_sf(aes(fill=bd_p)) +
+  theme_bw()# Yeay it worked
+
+
+adm1_cov %>% 
+  ggplot()+
+  geom_sf(aes(fill=penta1_p)) +
+  theme_bw()
+
+
+
+```
+
+
+
+
+
+
+
 
 
 ## Map with tmap
@@ -100,38 +123,43 @@ tm_shape(adm1_cov) + tm_polygons(col="bd_p") + tm_borders()
 map_lao + 
   tm_shape(adm1_cov) + 
   tm_fill(col="bd_p",
-          n=5, 
+          breaks=c(30,50,60,70,80,90,100), 
           palette = "viridis",
           title = "HBV birth dose (%)",
-          legend.position = "bottom") + 
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.5) + 
   tm_borders() -> map1
 
 map_lao + 
   tm_shape(adm1_cov) + 
   tm_fill(col="penta1_p",
-          n=5, 
+          breaks=c(30,50,60,70,80,90,100),  
           palette = "viridis",
           title = "Penta dose 1 (%)",
-          legend.position = "bottom") + 
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.5) + 
   tm_borders() -> map2
 
 map_lao + 
   tm_shape(adm1_cov) + 
   tm_fill(col="penta2_p",
-          n=5, 
+          breaks=c(30,50,60,70,80,90,100), 
           palette = "viridis",
           title = "Penta dose 2 (%)",
-          legend.position = "bottom") + 
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.5) + 
   tm_borders() -> map3
 
 map_lao + 
   tm_shape(adm1_cov) + 
   tm_fill(col="penta3_p",
-          n=5, 
+          breaks=c(30,50,60,70,80,90,100), 
           palette = "viridis",
           title = "Penta dose 3 (%)",
-          legend.position = "bottom") + 
-  tm_borders() -> map4
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.5) + 
+  tm_borders()+
+  tm_layout()-> map4
 
 
 tmap_arrange(map1, map2, map3, map4, nrow=1) -> map_all
@@ -146,6 +174,20 @@ tmap::tmap_save(map_all,"outputs/map_all.png", width=20,height=10,units ="cm")
 
 
 
+```{r another map}
+
+map_lao + 
+  tm_shape(adm1_cov) + 
+  tm_polygons(c("penta1_p", "penta2_p"),
+          breaks=c(30,50,60,70,80,90,100), 
+          palette = "viridis") +
+  tm_borders()+
+  tm_layout()+
+  tm_layout(legend.outside = TRUE)
+
+
+
+```
 
 
 

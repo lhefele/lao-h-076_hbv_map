@@ -29,20 +29,20 @@ library(tmap)
 
 ```{r data prov}
 
-adm1 <- read_sf("data/lao_bnd_admin1/lao_bnd_admin1_ngd2018.shp")
-adm1
+adm1_2018 <- read_sf("data/lao_bnd_admin1/lao_bnd_admin1_ngd2018.shp")
+adm1_2018
 
-data <- read.csv("data/cov_bd_penta.csv", header=T, sep=";", dec = ",")
-glimpse(data)
+data_2017 <- read.csv("data/2017_cov_bd_penta.csv", header=T, sep=";", dec = ",")
+glimpse(data_2017)
 
 ```
 
 
 ```{r adm1}
 
-glimpse(adm1)
+glimpse(adm1_2018)
 
-st_crs(adm1)
+st_crs(adm1_2018)
 
 ```
 
@@ -50,13 +50,11 @@ st_crs(adm1)
 ```{r merge}
 
 # Merge the datasets
+data_2017 %>% select(prov_new, bd_p, penta1_p, penta2_p, penta3_p) -> cov_2017
 
-# birth dose coverage
-data %>% select(prov_new, bd_p, penta1_p, penta2_p, penta3_p) -> cov
+cov_2017$ADM1_EN <- cov_2017$prov_new
 
-cov$ADM1_EN <- cov$prov_new
-
-merge(adm1, cov, by = "ADM1_EN") -> adm1_cov
+merge(adm1_2017, cov_2017, by = "ADM1_EN") -> adm1_2018_cov
 
 ```
 
@@ -68,7 +66,7 @@ merge(adm1, cov, by = "ADM1_EN") -> adm1_cov
 
 ```{r bd map}
 
-adm1_cov %>% 
+adm1_2018_cov %>% 
   ggplot()+
   geom_sf(aes(fill=bd_p)) # Yeay it worked
 
@@ -77,18 +75,15 @@ adm1_cov %>%
 
 ```{r map}
 
-adm1_cov %>% 
+adm1_2018_cov %>% 
   ggplot()+
   geom_sf(aes(fill=bd_p)) +
   theme_bw()# Yeay it worked
 
-
-adm1_cov %>% 
+adm1_2018_cov %>% 
   ggplot()+
   geom_sf(aes(fill=penta1_p)) +
   theme_bw()
-
-
 
 ```
 
@@ -105,13 +100,11 @@ adm1_cov %>%
 
 ```{r tmap}
 
-tm_shape(adm1_cov) + tm_borders()
+tm_shape(adm1_2018_cov) + tm_borders()
 
-map_lao = tm_shape(adm1_cov) + tm_polygons()
+map_lao = tm_shape(adm1_2018_cov) + tm_polygons()
 
-tm_shape(adm1_cov) + tm_polygons(col="bd_p") + tm_borders()
-
-
+tm_shape(adm1_2018_cov) + tm_polygons(col="bd_p") + tm_borders()
 
 ```
 
@@ -121,93 +114,66 @@ tm_shape(adm1_cov) + tm_polygons(col="bd_p") + tm_borders()
 ```{r all maps}
 
 map_lao + 
-  tm_shape(adm1_cov) + 
+  tm_shape(adm1_2018_cov) + 
   tm_fill(col="bd_p",
-          breaks=c(30,50,60,70,80,90,100),
-          labels = c("30%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          breaks=c(20,30,40,50,60,70,80,90,100),
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
           palette = "viridis",
           title = "HBV birth dose coverage",
           legend.position = c("left", "bottom"),
           legend.text.size = 0.7) + 
   tm_borders()+
-  tm_legend(text.size=0.5) -> map1
+  tm_legend(text.size=0.5) -> map1_17
 
 map_lao + 
-  tm_shape(adm1_cov) + 
+  tm_shape(adm1_2018_cov) + 
   tm_fill(col="penta1_p",
-          breaks=c(30,50,60,70,80,90,100), 
-          labels = c("30%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          breaks=c(20,30,40,50,60,70,80,90,100), 
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
           palette = "viridis",
           title = "Penta dose 1 coverage",
           legend.position = c("left", "bottom"),
           legend.text.size = 0.7) + 
   tm_borders()+
-  tm_legend(text.size=0.5) -> map2
+  tm_legend(text.size=0.5) -> map2_17
 
 map_lao + 
-  tm_shape(adm1_cov) + 
+  tm_shape(adm1_2018_cov) + 
   tm_fill(col="penta2_p",
-          breaks=c(30,50,60,70,80,90,100), 
-          labels = c("30%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          breaks=c(20,30,40,50,60,70,80,90,100), 
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
           palette = "viridis",
           title = "Penta dose 2 coverage",
           legend.position = c("left", "bottom"),
           legend.text.size = 0.7) + 
   tm_borders()+
-  tm_legend(text.size=0.5) -> map3
+  tm_legend(text.size=0.5) -> map3_17
 
 map_lao + 
-  tm_shape(adm1_cov) + 
+  tm_shape(adm1_2018_cov) + 
   tm_fill(col="penta3_p",
-          breaks=c(30,50,60,70,80,90,100),
-          labels = c("30%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          breaks=c(20,30,40,50,60,70,80,90,100),
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
           palette = "viridis",
           title = "Penta dose 3 coverage",
           legend.position = c("left", "bottom"),
           legend.text.size = 0.7) + 
   tm_borders()+
   tm_layout()+
-  tm_legend(text.size=0.5) -> map4
+  tm_legend(text.size=0.5) -> map4_17
 
 
-#tmap::tmap_save(map1,"outputs/map1.png", width=7,height=12,units ="cm")
-#tmap::tmap_save(map2,"outputs/map2.png", width=7,height=12,units ="cm")
-#tmap::tmap_save(map3,"outputs/map3.png", width=7,height=12,units ="cm")
-#tmap::tmap_save(map4,"outputs/map4.png", width=7,height=12,units ="cm")
-
+tmap::tmap_save(map1_17,"outputs/map1_17.png", width=7,height=12,units ="cm")
+tmap::tmap_save(map2_17,"outputs/map2_17.png", width=7,height=12,units ="cm")
+tmap::tmap_save(map3_17,"outputs/map3_17.png", width=7,height=12,units ="cm")
+tmap::tmap_save(map4_17,"outputs/map4_17.png", width=7,height=12,units ="cm")
 
 
 #tmap_arrange(map1, map2, map3, map4, nrow=1) -> map_all
 
 #tmap::tmap_save(map_all,"outputs/map_all.png", width=20,height=10,units ="cm")
 
-
-
-
-
 ```
-
-
-
-
-
-```{r another map}
-
-map_lao + 
-  tm_shape(adm1_cov) + 
-  tm_polygons(c("penta1_p", "penta2_p"),
-          breaks=c(30,50,60,70,80,90,100), 
-          palette = "viridis") +
-  tm_borders()+
-  tm_layout()+
-  tm_layout(legend.outside = TRUE)
-
-
-
-```
-
-
-
 
 
 
@@ -222,10 +188,36 @@ map_lao +
 
 ```{r data prov}
 
-adm1_2013 <- read_sf("lao_prov_princeton/polbnda_lao.shp")
+adm1_2013 <- read_sf("data/lao_prov_princeton/polbnda_lao.shp")
 adm1_2013
 
 ## Yes, seems to be 17 provinces!!!!
+
+adm1_2013 %>% count(nam)
+
+
+data_2012 <- read.csv("data/2012_cov_bd_penta.csv", header=T, sep=";", dec = ",")
+glimpse(data_2012)
+
+```
+
+```{r merge}
+
+# Merge the datasets
+data_2012 %>% select(prov, hepb0_p, penta_p, nam) -> cov_2012
+
+merge(adm1_2013, cov_2012, by = "nam") -> adm1_2013_cov
+
+adm1_2013_cov %>% count(nam)
+
+```
+
+
+```{r crs}
+
+st_crs(adm1_2013_cov)
+
+tm_shape(adm1_2013_cov)+tm_polygons() # seems to work
 
 
 ```
@@ -233,7 +225,48 @@ adm1_2013
 
 
 
+## Map with tmap
 
+
+```{r tmap}
+
+tm_shape(adm1_2013_cov) + tm_polygons(col="hepb0_p") + tm_borders()
+
+```
+
+
+
+
+```{r all maps}
+
+map_lao + 
+  tm_shape(adm1_2013_cov) + 
+  tm_fill(col="hepb0_p",
+          breaks=c(20,30,40,50,60,70,80,90,100),
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          palette = "viridis",
+          title = "HBV birth dose coverage",
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.7) + 
+  tm_borders()+
+  tm_legend(text.size=0.5) -> map1_2012
+
+map_lao + 
+  tm_shape(adm1_2013_cov) + 
+  tm_fill(col="penta_p",
+          breaks=c(20,30,40,50,60,70,80,90,100), 
+          labels = c("20%-30%", "30%-40%", "40%-50%", "50%-60%", "60%-70%", "70%-80%", "80%-90%", "90%-100%"), 
+          palette = "viridis",
+          title = "Pentavalent vaccine coverage",
+          legend.position = c("left", "bottom"),
+          legend.text.size = 0.7) + 
+  tm_borders()+
+  tm_legend(text.size=0.5) -> map2_2012
+
+tmap::tmap_save(map1_2012,"outputs/map1_12.png", width=7,height=12,units ="cm")
+tmap::tmap_save(map2_2012,"outputs/map2_12.png", width=7,height=12,units ="cm")
+
+```
 
 
 

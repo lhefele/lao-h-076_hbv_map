@@ -216,7 +216,19 @@ map_lao +
 
 
 
+## MICS 2012
 
+
+
+```{r data prov}
+
+adm1_2013 <- read_sf("lao_prov_princeton/polbnda_lao.shp")
+adm1_2013
+
+## Yes, seems to be 17 provinces!!!!
+
+
+```
 
 
 
